@@ -12,6 +12,7 @@ public class PaymentMapper {
         Payment payment=new Payment();
         payment.setOrderId(request.getOrderId());
         payment.setAmount(request.getAmount());
+
         return payment;
     }
     public void updatePaymentDetails(Payment payment,PaymentAmount paymentAmount){
@@ -20,4 +21,11 @@ public class PaymentMapper {
         payment.setPaymentType(paymentAmount.paymentType());
 
     }
+    public void updateUserDetails(Payment payment,PaymentAmount paymentAmount){
+
+        payment.setUserId(paymentAmount.userId());
+        payment.setUserEmail(paymentAmount.userEmail());
+
+    }
+
 }

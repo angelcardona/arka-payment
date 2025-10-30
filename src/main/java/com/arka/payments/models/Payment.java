@@ -21,6 +21,7 @@ public class Payment {
     private String id= UUID.randomUUID().toString();
     private String orderId;
     private String userId;
+    private String userEmail;
     private LocalDateTime createAt=LocalDateTime.now();
     private String paymentType;
     private String currency;

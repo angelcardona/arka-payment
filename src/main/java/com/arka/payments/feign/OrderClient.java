@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(name = "order-service",url = "http://localhost:8080/orders")
 public interface OrderClient {
-    @PostMapping("/accept/{orderId}")
-    public void acceptOrder(@PathVariable String orderId);
+    @PostMapping("/accept/{orderId}/{userId}")
+    public void acceptOrder(@PathVariable("orderId") String orderId,
+                            @PathVariable("userId") String userId);
 }

@@ -1,10 +1,12 @@
 package com.arka.payments.services;
 
 
+import com.arka.payments.events.PaymentAcceptedEvent;
 import com.arka.payments.feign.OrderClient;
 import com.arka.payments.mapper.PaymentMapper;
 import com.arka.payments.models.Payment;
 import com.arka.payments.models.PaymentStatus;
+import com.arka.payments.publisher.PaymentPublisher;
 import com.arka.payments.repository.PaymentJpaRepository;
 import com.arka.payments.resources.PaymentAmount;
 import com.arka.payments.resources.PaymentRefund;
@@ -22,6 +24,7 @@ public class PaymentService {
     private final PaymentJpaRepository repository;
     private final PaymentMapper mapper;
     private final OrderClient orderClient;
+    private final PaymentPublisher paymentPublisher;
 
 
     public String processPayment(PaymentRequest request){
@@ -39,10 +42,12 @@ public class PaymentService {
             throw new IllegalArgumentException("amount must be valid");
         }
         mapper.updatePaymentDetails(payment,amount);
+        mapper.updateUserDetails(payment,amount);
         payment.switchToAccepted();
-        payment.setUserId(amount.userId());
-        orderClient.acceptOrder(payment.getOrderId());
+        orderClient.acceptOrder(payment.getOrderId(),amount.userId());
         Payment saved=repository.save(payment);
+        PaymentAcceptedEvent event =new PaymentAcceptedEvent(saved.getUserId(),saved.getUserEmail());
+        paymentPublisher.paymentAcceptedPublisher(event);
         return saved.getId();
     }
     public void cancelPayment(String transactionId){

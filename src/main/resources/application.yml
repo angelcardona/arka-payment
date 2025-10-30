@@ -6,9 +6,30 @@ spring:
     username: postgres
     password: simple123
     driver-class-name: org.postgresql.Driver
-
   jpa:
     database: postgresql
     hibernate:
       ddl-auto: update
     show-sql: true
+
+    rabbitmq:
+      host: localhost
+      port: 5672
+      username: guest
+      password: guest
+  cloud:
+    function:
+      definition: paymentAcceptedSupplier
+    stream:
+      bindings:
+        paymentAcceptedSupplier-out-0:
+          destination: payment.accepted.exchange
+          content-type: application/json
+          producer:
+            durable-expression: true
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: busrefresh
+
