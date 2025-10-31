@@ -1,22 +1,31 @@
 server:
   port: 8083
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/payments
+    url: jdbc:postgresql://host.docker.internal:5432/payments
     username: postgres
     password: simple123
     driver-class-name: org.postgresql.Driver
+
   jpa:
-    database: postgresql
     hibernate:
       ddl-auto: update
     show-sql: true
 
-    rabbitmq:
-      host: localhost
-      port: 5672
-      username: guest
-      password: guest
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        auto-startup: false
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
   cloud:
     function:
       definition: paymentAcceptedSupplier
@@ -27,9 +36,9 @@ spring:
           content-type: application/json
           producer:
             durable-expression: true
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: busrefresh
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: busrefresh
